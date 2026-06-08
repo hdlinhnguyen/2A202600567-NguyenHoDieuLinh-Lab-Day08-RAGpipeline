@@ -27,6 +27,12 @@ DEFAULT_TOP_K = 5
 RERANK_METHOD = "cross_encoder"  # "cross_encoder" | "mmr" | "rrf"
 
 
+def _mark_source(results: list[dict], source: str) -> list[dict]:
+    for item in results:
+        item["source"] = source
+    return results
+
+
 def retrieve(
     query: str,
     top_k: int = DEFAULT_TOP_K,
@@ -86,7 +92,28 @@ def retrieve(
     #     return fallback
     #
     # return final_results[:top_k]
-    raise NotImplementedError("Implement retrieve")
+    # Fallback to PageIndex nếu hybrid không đủ tốt
+    if not query or not query.strip():
+        return []
+
+    dense_results = semantic_search(query, top_k=top_k * 2)
+    sparse_results = lexical_search(query, top_k=top_k * 2)
+
+    merged_results = rerank_rrf([dense_results, sparse_results], top_k=top_k * 2)
+    merged_results = _mark_source(merged_results, "hybrid")
+
+    if use_reranking and merged_results:
+        final_results = rerank(query, merged_results, top_k=top_k, method=RERANK_METHOD)
+        final_results = _mark_source(final_results, "hybrid")
+    else:
+        final_results = merged_results[:top_k]
+
+    if not final_results or final_results[0].get("score", 0.0) < score_threshold:
+        fallback_results = pageindex_search(query, top_k=top_k)
+        if fallback_results:
+            return fallback_results
+
+    return final_results[:top_k]
 
 
 if __name__ == "__main__":

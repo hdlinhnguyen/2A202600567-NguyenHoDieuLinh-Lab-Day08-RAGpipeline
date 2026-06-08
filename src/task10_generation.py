@@ -10,9 +10,13 @@ Hướng dẫn:
 """
 
 import os
-from dotenv import load_dotenv
+import requests
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 from .task9_retrieval_pipeline import retrieve
 
@@ -32,6 +36,9 @@ TOP_P = 0.9
 # temperature: Độ ngẫu nhiên của output
 # Chọn 0.3 vì: RAG cần factual, ít sáng tạo
 TEMPERATURE = 0.3
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 
 
 # =============================================================================
@@ -75,20 +82,15 @@ def reorder_for_llm(chunks: list[dict]) -> list[dict]:
     Returns:
         List reordered để maximize LLM attention.
     """
-    # TODO: Implement reordering
-    #
-    # if len(chunks) <= 2:
-    #     return chunks
-    #
-    # # Split into first half (important → đầu) and second half (important → cuối)
-    # reordered = []
-    # for i in range(0, len(chunks), 2):
-    #     reordered.append(chunks[i])  # Odd positions go first
-    # for i in range(len(chunks) - 1 - (len(chunks) % 2 == 0), 0, -2):
-    #     reordered.append(chunks[i])  # Even positions go last (reversed)
-    #
-    # return reordered
-    raise NotImplementedError("Implement reorder_for_llm")
+    if not chunks:
+        return []
+    if len(chunks) <= 2:
+        return chunks[:]
+
+    reordered = [chunks[i] for i in range(0, len(chunks), 2)]
+    start = len(chunks) - 1 if len(chunks) % 2 == 1 else len(chunks) - 2
+    reordered.extend(chunks[i] for i in range(start, 0, -2))
+    return reordered
 
 
 # =============================================================================
@@ -106,18 +108,17 @@ def format_context(chunks: list[dict]) -> str:
     Returns:
         Formatted context string.
     """
-    # TODO: Implement context formatting
-    #
-    # context_parts = []
-    # for i, chunk in enumerate(chunks, 1):
-    #     source = chunk.get("metadata", {}).get("source", f"Source {i}")
-    #     doc_type = chunk.get("metadata", {}).get("type", "unknown")
-    #     context_parts.append(
-    #         f"[Document {i} | Source: {source} | Type: {doc_type}]\n"
-    #         f"{chunk['content']}\n"
-    #     )
-    # return "\n---\n".join(context_parts)
-    raise NotImplementedError("Implement format_context")
+    context_parts = []
+    for index, chunk in enumerate(chunks, start=1):
+        metadata = chunk.get("metadata", {}) or {}
+        source = metadata.get("source") or metadata.get("filename") or metadata.get("path") or f"document_{index}"
+        doc_type = metadata.get("type") or metadata.get("doc_type") or "unknown"
+        score = float(chunk.get("score", 0.0))
+        context_parts.append(
+            f"[Document {index} | Source: {source} | Type: {doc_type} | Score: {score:.4f}]\n"
+            f"{chunk.get('content', '').strip()}"
+        )
+    return "\n---\n".join(context_parts)
 
 
 # =============================================================================
@@ -146,43 +147,70 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
             'retrieval_source': str  # 'hybrid' hoặc 'pageindex'
         }
     """
-    # TODO: Implement generation pipeline
-    #
-    # # Step 1: Retrieve
-    # chunks = retrieve(query, top_k=top_k)
-    #
-    # # Step 2: Reorder
-    # reordered = reorder_for_llm(chunks)
-    #
-    # # Step 3: Format context
-    # context = format_context(reordered)
-    #
-    # # Step 4: Build prompt
-    # user_message = f"""Context:\n{context}\n\n---\n\nQuestion: {query}"""
-    #
-    # # Step 5: Call LLM
-    # from openai import OpenAI
-    # client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    #
-    # response = client.chat.completions.create(
-    #     model="gpt-4o-mini",
-    #     messages=[
-    #         {"role": "system", "content": SYSTEM_PROMPT},
-    #         {"role": "user", "content": user_message}
-    #     ],
-    #     temperature=TEMPERATURE,
-    #     top_p=TOP_P,
-    # )
-    #
-    # answer = response.choices[0].message.content
-    #
-    # # Step 6: Return
-    # return {
-    #     "answer": answer,
-    #     "sources": chunks,
-    #     "retrieval_source": chunks[0].get("source", "hybrid") if chunks else "none"
-    # }
-    raise NotImplementedError("Implement generate_with_citation")
+    if not query or not query.strip():
+        return {
+            "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+            "sources": [],
+            "retrieval_source": "none",
+        }
+
+    chunks = retrieve(query, top_k=top_k)
+    if not chunks:
+        return {
+            "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có.",
+            "sources": [],
+            "retrieval_source": "none",
+        }
+
+    reordered = reorder_for_llm(chunks)
+    context = format_context(reordered)
+    user_message = f"Context:\n{context}\n\nQuestion: {query}"
+
+    if not OPENROUTER_API_KEY:
+        return {
+            "answer": "Tôi không thể xác minh thông tin này từ nguồn hiện có vì chưa cấu hình API key OpenRouter.",
+            "sources": chunks,
+            "retrieval_source": chunks[0].get("source", "hybrid"),
+        }
+
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+        "temperature": TEMPERATURE,
+        "top_p": TOP_P,
+        "max_tokens": 512,
+    }
+
+    try:
+        response = requests.post(
+            OPENROUTER_ENDPOINT,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            },
+            json=payload,
+            timeout=30,
+        )
+        response.raise_for_status()
+        result = response.json()
+        answer = ""
+        if "choices" in result and result["choices"]:
+            choice = result["choices"][0]
+            message = choice.get("message", {})
+            answer = message.get("content", "")
+        if not answer:
+            answer = "Tôi không thể xác minh thông tin này từ nguồn hiện có."
+    except Exception:
+        answer = "Tôi không thể xác minh thông tin này từ nguồn hiện có do lỗi khi gọi API OpenRouter."
+
+    return {
+        "answer": answer,
+        "sources": chunks,
+        "retrieval_source": chunks[0].get("source", "hybrid") if chunks else "none",
+    }
 
 
 if __name__ == "__main__":

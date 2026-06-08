@@ -19,34 +19,50 @@ Hướng dẫn:
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 PAGEINDEX_API_KEY = os.getenv("PAGEINDEX_API_KEY", "")
 STANDARDIZED_DIR = Path(__file__).parent.parent / "data" / "standardized"
+
+
+def _load_standardized_documents() -> list[Path]:
+    if not STANDARDIZED_DIR.exists():
+        return []
+    return sorted(STANDARDIZED_DIR.rglob("*.md"))
 
 
 def upload_documents():
     """
     Upload toàn bộ markdown documents lên PageIndex.
     """
-    # TODO: Implement upload
-    #
-    # Tham khảo: https://github.com/VectifyAI/PageIndex
-    #
-    # from pageindex import PageIndex
-    #
-    # pi = PageIndex(api_key=PAGEINDEX_API_KEY)
-    #
-    # for md_file in STANDARDIZED_DIR.rglob("*.md"):
-    #     content = md_file.read_text(encoding="utf-8")
-    #     pi.upload(
-    #         content=content,
-    #         metadata={"filename": md_file.name, "type": md_file.parent.name}
-    #     )
-    #     print(f"  ✓ Uploaded: {md_file.name}")
-    raise NotImplementedError("Implement upload_documents")
+    if not PAGEINDEX_API_KEY:
+        raise ValueError("PAGEINDEX_API_KEY không được cấu hình.")
+
+    try:
+        from pageindex import PageIndex
+    except ImportError as exc:
+        raise ImportError(
+            "pageindex package chưa được cài đặt. "
+            "Install with `pip install pageindex`."
+        ) from exc
+
+    documents = _load_standardized_documents()
+    if not documents:
+        raise FileNotFoundError("Không tìm thấy file markdown trong data/standardized/.")
+
+    pi = PageIndex(api_key=PAGEINDEX_API_KEY)
+    for md_file in documents:
+        content = md_file.read_text(encoding="utf-8").strip()
+        if not content:
+            continue
+        metadata = {"filename": md_file.name, "type": md_file.parent.name}
+        pi.upload(content=content, metadata=metadata)
+        print(f"  ✓ Uploaded: {md_file.name}")
 
 
 def pageindex_search(query: str, top_k: int = 5) -> list[dict]:
@@ -66,23 +82,42 @@ def pageindex_search(query: str, top_k: int = 5) -> list[dict]:
             'source': 'pageindex'   # Đánh dấu nguồn retrieval
         }
     """
-    # TODO: Implement PageIndex query
-    #
-    # from pageindex import PageIndex
-    #
-    # pi = PageIndex(api_key=PAGEINDEX_API_KEY)
-    # results = pi.query(query=query, top_k=top_k)
-    #
-    # return [
-    #     {
-    #         "content": r.text,
-    #         "score": r.score,
-    #         "metadata": r.metadata,
-    #         "source": "pageindex"
-    #     }
-    #     for r in results
-    # ]
-    raise NotImplementedError("Implement pageindex_search")
+    if not query or not query.strip():
+        return []
+
+    if not PAGEINDEX_API_KEY:
+        return []
+
+    try:
+        from pageindex import PageIndex
+    except ImportError:
+        return []
+
+    try:
+        pi = PageIndex(api_key=PAGEINDEX_API_KEY)
+        results = pi.query(query=query, top_k=top_k)
+    except Exception:
+        return []
+
+    output = []
+    for item in results:
+        if isinstance(item, dict):
+            text = item.get("text") or item.get("content") or ""
+            score = float(item.get("score", 0.0))
+            metadata = item.get("metadata", {}) or {}
+        else:
+            text = getattr(item, "text", None) or getattr(item, "content", "")
+            score = float(getattr(item, "score", 0.0))
+            metadata = getattr(item, "metadata", {}) or {}
+
+        output.append({
+            "content": text,
+            "score": score,
+            "metadata": metadata,
+            "source": "pageindex",
+        })
+
+    return output
 
 
 if __name__ == "__main__":
