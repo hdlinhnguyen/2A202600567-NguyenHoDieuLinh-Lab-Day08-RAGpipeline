@@ -1,17 +1,128 @@
 [
   {
+    "id": "legal_01",
+    "category": "legal",
     "question": "Hình phạt cho tội tàng trữ trái phép chất ma tuý theo Điều 249 Bộ luật Hình sự?",
-    "expected_answer": "Phạt tù từ 1 đến 5 năm đối với trường hợp tàng trữ từ 1g đến dưới 5g heroin hoặc cocaine, hoặc chất ma tuý khác với khối lượng tương đương.",
+    "expected_answer": "Tội tàng trữ trái phép chất ma túy theo Điều 249 BLHS bị phạt tù; mức phạt tùy theo loại và khối lượng chất ma túy, có thể từ vài năm đến tù chung thân tùy trường hợp.",
     "expected_context": "Bộ luật Hình sự 2015, Điều 249"
   },
   {
+    "id": "legal_02",
+    "category": "legal",
     "question": "Luật Phòng chống ma tuý 2021 quy định những hình thức cai nghiện nào?",
-    "expected_answer": "Cai nghiện tự nguyện tại gia đình, cai nghiện tự nguyện tại cộng đồng, cai nghiện tự nguyện tại cơ sở cai nghiện, và cai nghiện bắt buộc tại cơ sở cai nghiện.",
-    "expected_context": "Luật Phòng chống ma tuý 2021, Chương V"
+    "expected_answer": "Gồm cai nghiện tự nguyện tại gia đình, tại cộng đồng, tại cơ sở cai nghiện và cai nghiện bắt buộc tại cơ sở cai nghiện.",
+    "expected_context": "Luật Phòng chống ma túy 2021, Chương V"
   },
   {
+    "id": "legal_03",
+    "category": "legal",
     "question": "Danh mục các chất ma tuý thuộc nhóm I theo quy định pháp luật Việt Nam gồm những chất nào?",
-    "expected_answer": "Nhóm I gồm các chất ma tuý tuyệt đối cấm sử dụng trong y học và đời sống, bao gồm heroin, cocaine, methamphetamine, MDMA (ecstasy), cannabis (cần sa), và các chất tương tự.",
-    "expected_context": "Nghị định 57/2022/NĐ-CP, Phụ lục I"
+    "expected_answer": "Nhóm I gồm các chất ma túy tuyệt đối cấm, như heroin, cocaine, methamphetamine, MDMA, cannabis và các chất tương tự theo Thông tư liên tịch.",
+    "expected_context": "Thông tư liên tịch về danh mục chất ma tuý, Phụ lục I"
+  },
+  {
+    "id": "legal_04",
+    "category": "legal",
+    "question": "Tội vận chuyển trái phép chất ma tuý theo Bộ luật Hình sự bị xử lý thế nào?",
+    "expected_answer": "Vận chuyển trái phép chất ma túy là tội hình sự theo Điều 250 BLHS, bị phạt tù với mức phạt tăng theo khối lượng và tính chất vụ án.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 250"
+  },
+  {
+    "id": "legal_05",
+    "category": "legal",
+    "question": "Tội tổ chức sử dụng trái phép chất ma tuý bị phạt như thế nào?",
+    "expected_answer": "Tổ chức sử dụng trái phép chất ma túy là tội hình sự, người tổ chức có thể bị khởi tố, bắt tạm giam và phạt tù theo Điều 255 BLHS.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 255"
+  },
+  {
+    "id": "legal_06",
+    "category": "legal",
+    "question": "Người nghiện ma tuý có bắt buộc phải cai nghiện không?",
+    "expected_answer": "Người nghiện ma túy có thể được áp dụng cai nghiện tự nguyện hoặc cai nghiện bắt buộc tại cơ sở cai nghiện theo Luật Phòng chống ma túy 2021.",
+    "expected_context": "Luật Phòng chống ma túy 2021"
+  },
+  {
+    "id": "legal_07",
+    "category": "legal",
+    "question": "Sử dụng trái phép chất ma tuý bị xử lý ra sao theo pháp luật hình sự?",
+    "expected_answer": "Sử dụng trái phép chất ma túy bị xử lý hình sự theo Điều 254 BLHS, có thể bị phạt tiền, cải tạo không giam giữ hoặc phạt tù tùy trường hợp.",
+    "expected_context": "Bộ luật Hình sự 2015, Điều 254"
+  },
+  {
+    "id": "news_01",
+    "category": "news",
+    "question": "Ca sĩ Miu Lê bị khởi tố vì hành vi gì liên quan ma tuý?",
+    "expected_answer": "Miu Lê bị khởi tố về tội tổ chức sử dụng trái phép chất ma túy tại Cát Bà, Hải Phòng, tháng 5/2026.",
+    "expected_context": "article_01.md, article_03.md, Miu Lê Cát Bà"
+  },
+  {
+    "id": "news_02",
+    "category": "news",
+    "question": "Long Nhật và Sơn Ngọc Minh bị bắt trong vụ việc gì?",
+    "expected_answer": "Long Nhật và Sơn Ngọc Minh bị bắt trong chuyên án ma túy quy mô lớn tại TPHCM, Công an triệt phá đường dây với 74 đối tượng, 71 bị khởi tố.",
+    "expected_context": "article_03.md, Long Nhật, Sơn Ngọc Minh, TPHCM"
+  },
+  {
+    "id": "news_03",
+    "category": "news",
+    "question": "Rapper Bình Gold dính tội gì liên quan ma tuý?",
+    "expected_answer": "Bình Gold (Vũ Xuân Bình) bị phát hiện dương tính ma túy (cần sa, bồ đà) khi bị dừng xe trên cao tốc Nội Bài - Lào Cai năm 2025.",
+    "expected_context": "article_03.md, Bình Gold"
+  },
+  {
+    "id": "news_04",
+    "category": "news",
+    "question": "Gần đây có vụ bắt ma tuý lớn nào đáng chú ý tại Việt Nam không?",
+    "expected_answer": "Có: vụ Miu Lê tại Cát Bà (Hải Phòng), vụ Long Nhật và Sơn Ngọc Minh tại TPHCM (74 đối tượng), và các vụ nghệ sĩ khác như Bình Gold.",
+    "expected_context": "article_01.md, article_03.md"
+  },
+  {
+    "id": "news_05",
+    "category": "news",
+    "question": "Có những nghệ sĩ nào đã bị khởi tố vì liên quan ma tuý gần đây?",
+    "expected_answer": "Gồm ca sĩ Miu Lê, Long Nhật, Sơn Ngọc Minh; rapper Bình Gold; và các trường hợp khác như Chi Dân, Nguyễn Công Trí được nhắc trong bài báo.",
+    "expected_context": "article_03.md"
+  },
+  {
+    "id": "news_06",
+    "category": "news",
+    "question": "Vụ ma tuý tại Cát Bà liên quan đến những ai?",
+    "expected_answer": "Vụ tại Cát Bà liên quan ca sĩ Miu Lê (Lê Ánh Nhật), Vũ Khương An, Trần Đức Phong và nhóm đối tượng khác; 3 bị can bị khởi tố.",
+    "expected_context": "article_01.md, Cát Bà, Miu Lê"
+  },
+  {
+    "id": "news_07",
+    "category": "news",
+    "question": "Ca sĩ Chi Dân bị xử lý vì hành vi gì liên quan ma tuý?",
+    "expected_answer": "Chi Dân bị Công an TPHCM khởi tố, bắt khẩn cấp năm 2024 về tội tàng trữ và tổ chức sử dụng trái phép chất ma túy.",
+    "expected_context": "article_03.md, Chi Dân"
+  },
+  {
+    "id": "news_08",
+    "category": "news",
+    "question": "Nghệ sĩ hài Hiệp Gà từng bị xử lý ra sao vì ma tuý?",
+    "expected_answer": "Hiệp Gà bị bắt quả tang tàng trữ trái phép chất ma túy năm 2007 và bị tuyên án 2 năm tù giam.",
+    "expected_context": "article_03.md, Hiệp Gà"
+  },
+  {
+    "id": "mixed_01",
+    "category": "mixed",
+    "question": "Khác nhau giữa tàng trữ trái phép và sử dụng trái phép chất ma tuý về mức xử phạt?",
+    "expected_answer": "Tàng trữ trái phép (Điều 249) và sử dụng trái phép (Điều 254) là hai tội danh khác nhau trong BLHS, mức phạt tùy theo khối lượng, số lần vi phạm và tình tiết.",
+    "expected_context": "Bộ luật Hình sự, Điều 249, Điều 254"
+  },
+  {
+    "id": "mixed_02",
+    "category": "mixed",
+    "question": "Miu Lê bị khởi tố theo tội danh nào trong Bộ luật Hình sự?",
+    "expected_answer": "Miu Lê bị khởi tố về tội tổ chức sử dụng trái phép chất ma túy, tương ứng Điều 255 BLHS.",
+    "expected_context": "article_01.md, Bộ luật Hình sự Điều 255"
+  },
+  {
+    "id": "mixed_03",
+    "category": "mixed",
+    "question": "Thông tư liên tịch về danh mục chất ma tuý quy định những nhóm chất nào?",
+    "expected_answer": "Thông tư liên tịch quy định danh mục các chất ma túy, tiền chất và phụ liệu dùng làm thuốc, phân loại theo nhóm I, II, III, IV.",
+    "expected_context": "Thông tư liên tịch về danh mục chất ma tuý"
   }
 ]
