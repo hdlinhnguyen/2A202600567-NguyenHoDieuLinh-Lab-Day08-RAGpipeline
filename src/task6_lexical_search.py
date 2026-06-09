@@ -22,6 +22,18 @@ from typing import List
 
 CORPUS: list[dict] = []  # List of {'content': str, 'metadata': dict}
 _BM25_INDEX = None
+_CHUNKS_CORPUS = None
+
+
+def _get_bm25():
+    global _BM25_INDEX, _CHUNKS_CORPUS
+    if _BM25_INDEX is not None and _CHUNKS_CORPUS is not None:
+        return _BM25_INDEX, _CHUNKS_CORPUS
+
+    from src.local_index import ensure_local_index
+    _CHUNKS_CORPUS = ensure_local_index()
+    _BM25_INDEX = build_bm25_index(_CHUNKS_CORPUS)
+    return _BM25_INDEX, _CHUNKS_CORPUS
 
 
 def _tokenize(text: str) -> list[str]:

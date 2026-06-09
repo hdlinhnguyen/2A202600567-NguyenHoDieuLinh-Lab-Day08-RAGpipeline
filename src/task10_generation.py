@@ -37,6 +37,7 @@ TOP_P = 0.9
 # Chọn 0.3 vì: RAG cần factual, ít sáng tạo
 TEMPERATURE = 0.3
 
+LLM_MODEL = os.getenv("LLM_MODEL", "openai/gpt-4o-mini")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -174,7 +175,7 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
         }
 
     payload = {
-        "model": "gpt-4o-mini",
+        "model": LLM_MODEL,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},

@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "group_project/chatbot/api:app"
